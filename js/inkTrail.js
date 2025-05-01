@@ -1,3 +1,4 @@
+<script>
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("inkCanvas");
   canvas.width = window.innerWidth;
@@ -9,14 +10,22 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas.style.pointerEvents = "none";
 
   const ctx = canvas.getContext("2d");
+
   let trails = [];
+  let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  let cursor = { x: mouse.x, y: mouse.y };
+
+  document.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
 
   class Dot {
     constructor(x, y) {
       this.x = x;
       this.y = y;
       this.life = 1.0;
-      this.radius = 6;
+      this.radius = 4;
     }
     draw(ctx) {
       this.life -= 0.02;
@@ -27,15 +36,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  document.addEventListener("mousemove", (e) => {
-    trails.push(new Dot(e.clientX, e.clientY));
-  });
-
   function animate() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 缓慢追踪鼠标
+    cursor.x += (mouse.x - cursor.x) * 0.2;
+    cursor.y += (mouse.y - cursor.y) * 0.2;
+
+    // 在“缓动点”位置生成残影
+    trails.push(new Dot(cursor.x, cursor.y));
+
+    // 渲染残影
     trails = trails.filter(dot => dot.life > 0);
     trails.forEach(dot => dot.draw(ctx));
+
     requestAnimationFrame(animate);
   }
 
@@ -46,3 +61,4 @@ document.addEventListener("DOMContentLoaded", () => {
     canvas.height = window.innerHeight;
   });
 });
+</script>
