@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas.style.position = "fixed";
   canvas.style.top = "0";
   canvas.style.left = "0";
-  canvas.style.zIndex = "999";
+  canvas.style.zIndex = "1";
   canvas.style.pointerEvents = "none";
 
   const ctx = canvas.getContext("2d");
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.x = x;
       this.y = y;
       this.life = 1.0;
-      this.radius = 8;
+      this.radius = 6;
     }
     draw(ctx) {
       this.life -= 0.02;
