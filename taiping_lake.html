@@ -15,17 +15,9 @@
       overflow-x: hidden;
     }
 
-    canvas#inkCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
-
     .container {
       position: relative;
-      z-index: 1;
+      z-index: 3;
       padding: 6vh 10vw;
       max-width: 1000px;
       margin: 0 auto;
@@ -82,7 +74,7 @@
   </style>
 </head>
 <body>
-  <!-- Canvas for mouse trail -->
+  <!-- ✅ Canvas for mouse trail -->
   <canvas id="inkCanvas"></canvas>
 
   <div class="container">
@@ -108,59 +100,66 @@
     <a href="index.html" class="back-btn">← 戻る / Back to Main</a>
   </div>
 
-  <!-- 引入你的鼠标追踪效果 JS -->
+  <!-- ✅ Inline JS for mouse trail -->
   <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.getElementById("inkCanvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+    document.addEventListener("DOMContentLoaded", () => {
+      const canvas = document.getElementById("inkCanvas");
+      if (!canvas) return;
 
-  let trails = [];
+      // ✅ 强制设置样式，避免被遮挡
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.position = "fixed";
+      canvas.style.top = "0";
+      canvas.style.left = "0";
+      canvas.style.zIndex = "2";
+      canvas.style.pointerEvents = "none";
 
-  class Ink {
-    constructor(x, y) {
-      this.x = x;
-      this.y = y;
-      this.life = 1.0;
-      this.radius = Math.random() * 15 + 5;
-      this.alpha = Math.random() * 0.5 + 0.2;
-      this.dx = Math.random() * 2 - 1;
-      this.dy = Math.random() * 2 - 1;
-    }
-    draw(ctx) {
-      this.x += this.dx;
-      this.y += this.dy;
-      this.life -= 0.01;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha * this.life})`;
-      ctx.fill();
-    }
-  }
+      const ctx = canvas.getContext("2d");
+      let trails = [];
 
-  canvas.addEventListener("mousemove", function(e) {
-    for (let i = 0; i < 5; i++) {
-      trails.push(new Ink(e.clientX, e.clientY));
-    }
-  });
+      class Ink {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          this.life = 1.0;
+          this.radius = Math.random() * 15 + 5;
+          this.alpha = Math.random() * 0.5 + 0.2;
+          this.dx = Math.random() * 2 - 1;
+          this.dy = Math.random() * 2 - 1;
+        }
+        draw(ctx) {
+          this.x += this.dx;
+          this.y += this.dy;
+          this.life -= 0.01;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha * this.life})`;
+          ctx.fill();
+        }
+      }
 
-  function animate() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    trails = trails.filter(t => t.life > 0);
-    trails.forEach(t => t.draw(ctx));
-    requestAnimationFrame(animate);
-  }
-  animate();
+      canvas.addEventListener("mousemove", function(e) {
+        for (let i = 0; i < 5; i++) {
+          trails.push(new Ink(e.clientX, e.clientY));
+        }
+      });
 
-  window.addEventListener("resize", () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  });
-});
-</script>
+      function animate() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        trails = trails.filter(t => t.life > 0);
+        trails.forEach(t => t.draw(ctx));
+        requestAnimationFrame(animate);
+      }
 
+      animate();
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    });
+  </script>
 </body>
 </html>
