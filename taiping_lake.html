@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>太平湖 - 墨迹轨迹修复版</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Noto Serif JP', serif;
+      background: #000;
+    }
+
+    #inkCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.6);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      color: #fff;
+      padding: 6vh 10vw;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+    }
+
+    .video-wrapper {
+      text-align: center;
+      margin: 40px 0;
+    }
+
+    iframe {
+      width: 90%;
+      max-width: 800px;
+      height: 450px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .text-block {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .back-btn {
+      display: block;
+      width: fit-content;
+      margin: 0 auto;
+      padding: 10px 25px;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+    }
+
+    .back-btn:hover {
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="inkCanvas"></canvas>
+<img id="background" src="https://images.unsplash.com/photo-1578946959520-3f50ae5b1f5f?auto=format&fit=crop&w=1600&q=80" alt="bg" />
+
+<div class="container">
+  <h1>五色の旅：太平湖｜青｜木 – 水面に映る静寂</h1>
+
+  <div class="video-wrapper">
+    <iframe src="https://www.youtube.com/embed/1kMkEx9wx-s" allowfullscreen></iframe>
+  </div>
+
+  <div class="text-block">
+    山々に囲まれた太平湖は、鏡のように澄んだ湖面と緑豊かな自然が広がる癒しの場所。
+    小舟で巡る湖上の旅は、都会の喧騒を忘れさせてくれます。
+  </div>
+
+  <div class="text-block">
+    Surrounded by lush hills, Taiping Lake offers a tranquil escape with its mirror-like waters and serene landscapes.
+    A peaceful boat ride brings you closer to nature’s quiet rhythm.
+  </div>
+
+  <a href="index.html" class="back-btn">← 戻る</a>
+</div>
+
+<script>
+const canvas = document.getElementById('inkCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let trails = [];
+
+class Ink {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.radius = Math.random() * 8 + 3;
+    this.life = 1.0;
+    this.alpha = 0.8;
+    this.dx = Math.random() * 1.5 - 0.75;
+    this.dy = Math.random() * 1.5 - 0.75;
+  }
+
+  draw(ctx) {
+    this.x += this.dx;
+    this.y += this.dy;
+    this.life -= 0.01;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    ctx.fillStyle = `rgba(255,255,255,${this.alpha * this.life})`;
+    ctx.fill();
+  }
+}
+
+canvas.addEventListener("mousemove", (e) => {
+  for (let i = 0; i < 3; i++) {
+    trails.push(new Ink(e.clientX, e.clientY));
+  }
+});
+
+function animate() {
+  ctx.fillStyle = "rgba(0,0,0,0.1)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  trails = trails.filter(t => t.life > 0);
+  trails.forEach(t => t.draw(ctx));
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
